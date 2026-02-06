@@ -1,6 +1,6 @@
 {
   "name": "@rmdes/indiekit-endpoint-syndicate",
-  "version": "1.0.0-beta.28",
+  "version": "1.0.0-beta.29",
   "description": "Syndication endpoint for Indiekit. Fork of @indiekit/endpoint-syndicate with batch syndication support and bug fixes.",
   "keywords": [
     "indiekit",
