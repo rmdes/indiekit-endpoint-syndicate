@@ -1,6 +1,6 @@
 {
   "name": "@rmdes/indiekit-endpoint-syndicate",
-  "version": "1.0.0-beta.36",
+  "version": "1.0.0-beta.37",
   "description": "Syndication endpoint for Indiekit. Fork of @indiekit/endpoint-syndicate with batch syndication support and bug fixes.",
   "keywords": [
     "indiekit",
@@ -28,7 +28,7 @@
     "url": "https://github.com/rmdes/indiekit-endpoint-syndicate.git"
   },
   "dependencies": {
-    "@indiekit/error": "^1.0.0-beta.25",
+    "@indiekit/error": "^1.0.0-beta.27",
     "express": "^5.0.0",
     "jsonwebtoken": "^9.0.0"
   },
