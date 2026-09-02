@@ -289,6 +289,39 @@ Content-Type: application/json
 
 ## Known Gotchas
 
+### Batch mode is single-flight (v1.0.0-beta.39+)
+
+Batch mode refuses to start while another batch is running, returning
+`"Batch already in progress"`. Without this, duplicate syndications were
+routine.
+
+Two triggers fire batch mode independently and neither knows about the other:
+
+1. the poller in `start.sh`, every 2 minutes
+2. the Eleventy `eleventy.after` hook, after **every** incremental build
+
+`getAllPostData()` selects on `properties.mp-syndicate-to` existing, and that
+flag is only cleared at the *end* of a batch by the Micropub update. So a post
+stays selectable for its own entire syndication. A second trigger landing in
+that window sees `alreadySyndicated=false` — the dedup in `syndicateToTargets()`
+reads the stored `syndication` property, which has not been written yet — and
+syndicates it again.
+
+Observed in production on 2026-09-02: one note produced three Bluesky posts from
+three batches at 18:56:15, 18:56:41 and 18:57:34. Syndication is slow enough
+(readiness gate, multiple targets, a 2s inter-post delay) to keep that window
+open for tens of seconds, and a batch's own Micropub update triggers a rebuild,
+which fires the hook again — so the bug partly feeds itself.
+
+The guard is a module-level flag, sufficient because both triggers reach the
+same Node process. It must be released in a `finally`: a guard stuck on disables
+syndication entirely, which is worse than duplicates. `test/batch-guard-release.js`
+covers both release paths.
+
+Single-post mode (`source_url`, `force: true`) is deliberately **not** guarded —
+that is manual re-syndication and should always run.
+
+
 ### Webhook Signature vs Access Token
 The token extraction logic has **three priority levels**:
 1. Webhook signature (highest priority)
