@@ -57,7 +57,8 @@ const countingTarget = (delayMs = 0) => {
       options: { checked: true },
       async syndicate() {
         calls.count++;
-        if (delayMs) await new Promise((resolve) => setTimeout(resolve, delayMs));
+        if (delayMs)
+          await new Promise((resolve) => setTimeout(resolve, delayMs));
         return SYNDICATED_URL;
       },
     },
@@ -86,7 +87,8 @@ const startEndpoint = async ({ site, target, toArray }) => {
   const origin = await listen(server);
   return {
     server,
-    fire: () => fetch(`${origin}/syndicate?token=test-token`, { method: "POST" }),
+    fire: () =>
+      fetch(`${origin}/syndicate?token=test-token`, { method: "POST" }),
   };
 };
 
