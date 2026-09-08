@@ -1,30 +1,22 @@
 # @rmdes/indiekit-endpoint-syndicate
 
-Syndication endpoint for Indiekit. Fork of @indiekit/endpoint-syndicate with batch syndication support and critical bug fixes.
+Syndication endpoint for Indiekit. Fork of @indiekit/endpoint-syndicate with batch syndication support.
 
 ## Features
 
 - **Single Post Syndication** - Syndicate a specific post to configured targets
 - **Batch Syndication** - Process all pending posts at once (useful for cron jobs)
 - **Webhook Support** - Netlify webhook signature verification
-- **Partial Syndication** - Correctly handles posts partially syndicated (fixed upstream bug)
 - **Failed Target Retry** - Automatically retries failed syndication targets
 - **Rate Limiting** - 2-second delay between posts in batch mode
 - **Detailed Results** - Per-post success/failure tracking in batch mode
 
-## Bug Fixes vs Upstream
+## Differences from upstream
 
-### Critical Fixes
-
-1. **Array.isArray Bug** - Fixed function reference bug that prevented correct array detection
-2. **Partial Syndication** - Removed filter that prevented retry of partially syndicated posts
-3. **Enhanced Error Handling** - Per-post error tracking instead of failing entire batch
-
-### New Features
+The `Array.isArray` and partial-syndication fixes this fork once carried are in upstream since 1.0.0-beta.29; the fork tracks upstream for them. What remains fork-only:
 
 - Batch mode for processing all pending posts
-- Detailed results array with success/failure per post
-- Better console logging for debugging
+- Detailed results array with success/failure per post, instead of failing the whole batch on one error
 
 ## Installation
 
