@@ -72,10 +72,12 @@ const countingTarget = (delayMs = 0) => {
  */
 const startEndpoint = async ({ site, target, toArray }) => {
   const app = express();
+  // @ts-expect-error — a partial application is all the controller reads
   app.locals.application = {
     micropubEndpoint: `${site.origin}/micropub`,
     collections: new Map([["posts", postsCollection(toArray)]]),
   };
+  // @ts-expect-error — likewise a partial publication
   app.locals.publication = { me: site.origin, syndicationTargets: [target] };
   app.post("/syndicate", syndicateController.post);
   // Swallow errors so a thrown batch returns a response instead of hanging.
