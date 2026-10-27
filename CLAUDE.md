@@ -73,7 +73,7 @@ Return success/failure results
 
 ### index.js
 - Main plugin class `SyndicateEndpoint`
-- Registers public POST route at `/syndicate` (no auth required - token verified in controller)
+- Registers public POST route at `/syndicate`: no auth middleware runs, so the controller introspects the bearer token (active, matching `me`, `update` scope) before any target is contacted
 - Stores `mountPath` in `application._syndicationEndpointPath` for use by other plugins
 - Default mount path: `/syndicate`
 

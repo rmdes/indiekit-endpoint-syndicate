@@ -20,17 +20,25 @@ const listen = async (server) => {
 };
 
 /**
- * Stands in for the site being syndicated. One handler serves both roles:
- * the readiness gate only reads the status of its HEAD requests, and the
+ * Stands in for the site being syndicated. One handler serves every role:
+ * introspection accepts the token as update-scoped for this site, the
+ * readiness gate only reads the status of its HEAD requests, and the
  * Micropub update only needs a 200 with a JSON body.
  * @returns {Promise<object>} Server handle and origin
  */
 const startSite = async () => {
-  const server = createServer((request, response) => {
+  const site = {};
+  site.server = createServer((request, response) => {
     response.writeHead(200, { "content-type": "application/json" });
+    if (request.url === "/introspect") {
+      return response.end(
+        JSON.stringify({ active: true, me: site.origin, scope: "update" }),
+      );
+    }
     response.end(JSON.stringify({ success_description: "Post updated" }));
   });
-  return { server, origin: await listen(server) };
+  site.origin = await listen(site.server);
+  return site;
 };
 
 /**
@@ -74,11 +82,16 @@ const startEndpoint = async ({ site, target, toArray }) => {
   const app = express();
   // @ts-expect-error — a partial application is all the controller reads
   app.locals.application = {
+    introspectionEndpoint: `${site.origin}/introspect`,
     micropubEndpoint: `${site.origin}/micropub`,
     collections: new Map([["posts", postsCollection(toArray)]]),
   };
   // @ts-expect-error — likewise a partial publication
   app.locals.publication = { me: site.origin, syndicationTargets: [target] };
+  app.use((request, response, next) => {
+    response.locals.__ = (key) => key;
+    next();
+  });
   app.post("/syndicate", syndicateController.post);
   // Swallow errors so a thrown batch returns a response instead of hanging.
   app.use((error, request, response, next) =>
